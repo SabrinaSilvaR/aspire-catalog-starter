@@ -3,7 +3,8 @@
   "options": {
     "env": {
       "PATH": "C:\\Users\\sabri\\AppData\\Local\\Microsoft\\dotnet;${env:PATH}",
-      "DOTNET_ROOT": "C:\\Users\\sabri\\AppData\\Local\\Microsoft\\dotnet"
+      "DOTNET_ROOT": "C:\\Users\\sabri\\AppData\\Local\\Microsoft\\dotnet",
+      "DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS": "true"
     }
   },
   "tasks": [
