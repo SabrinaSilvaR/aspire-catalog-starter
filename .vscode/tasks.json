@@ -1,5 +1,11 @@
 {
   "version": "2.0.0",
+  "options": {
+    "env": {
+      "PATH": "C:\\Users\\sabri\\AppData\\Local\\Microsoft\\dotnet;${env:PATH}",
+      "DOTNET_ROOT": "C:\\Users\\sabri\\AppData\\Local\\Microsoft\\dotnet"
+    }
+  },
   "tasks": [
     {
       "label": "build",
