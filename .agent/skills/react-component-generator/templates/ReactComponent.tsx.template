@@ -1,0 +1,48 @@
+import { useEffect, useState } from 'react'
+import type { {{Entity}}Dto } from '../api/types'
+
+export interface {{Entity}}ListProps {
+  onSelect?: (item: {{Entity}}Dto) => void
+}
+
+export function {{Entity}}List({ onSelect }: {{Entity}}ListProps) {
+  const [items, setItems] = useState<{{Entity}}Dto[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const loadData = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/{{EntityKebab}}')
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+      const data = await res.json()
+      setItems(data.items || [])
+    } catch (err: any) {
+      setError(err.message || 'Error al cargar datos')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  if (loading) return <div>Cargando {{EntityPlural}}...</div>
+  if (error) return <div style={{ color: 'red' }}>⚠️ {error}</div>
+  if (items.length === 0) return <div>No hay {{EntityPlural}} disponibles.</div>
+
+  return (
+    <div>
+      <h3>Listado de {{EntityPlural}} ({items.length})</h3>
+      <ul>
+        {items.map((item) => (
+          <li key={item.id} onClick={() => onSelect?.(item)}>
+            {item.name}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}

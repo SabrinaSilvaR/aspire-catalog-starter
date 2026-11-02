@@ -1,0 +1,59 @@
+import { useEffect, useState } from 'react'
+
+export interface SupplierDto {
+  id: string
+  legalName: string
+  taxId: string
+  email: string
+  phone: string
+}
+
+export function SupplierTable() {
+  const [suppliers, setSuppliers] = useState<SupplierDto[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchSuppliers = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/suppliers')
+      if (!res.ok) throw new Error('Error al consultar proveedores')
+      const data = await res.json()
+      setSuppliers(data.items || [])
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchSuppliers()
+  }, [])
+
+  if (loading) return <div>Cargando proveedores...</div>
+  if (error) return <div>Error: {error}</div>
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Razón Social</th>
+          <th>RUT</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+        </tr>
+      </thead>
+      <tbody>
+        {suppliers.map(s => (
+          <tr key={s.id}>
+            <td>{s.legalName}</td>
+            <td>{s.taxId}</td>
+            <td>{s.email}</td>
+            <td>{s.phone}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}

@@ -1,0 +1,63 @@
+using Backend.Application.Common.Interfaces;
+using FastEndpoints;
+using FluentValidation;
+using Microsoft.AspNetCore.Http;
+
+namespace Backend.Api.Endpoints.{{Feature}};
+
+// 1. Request Contract
+public sealed record {{Action}}{{Feature}}Request(
+    string Name,
+    string Code
+);
+
+// 2. Response Contract
+public sealed record {{Action}}{{Feature}}Response(
+    Guid Id,
+    string Name,
+    string Code,
+    DateTime CreatedAtUtc
+);
+
+// 3. Validator (FluentValidation)
+public sealed class {{Action}}{{Feature}}Validator : Validator<{{Action}}{{Feature}}Request>
+{
+    public {{Action}}{{Feature}}Validator()
+    {
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(200);
+        RuleFor(x => x.Code).NotEmpty().MaximumLength(50);
+    }
+}
+
+// 4. Endpoint Handler (REPR)
+public class {{Action}}{{Feature}}Endpoint(IApplicationDbContext dbContext, ICacheService cache) 
+    : Endpoint<{{Action}}{{Feature}}Request, {{Action}}{{Feature}}Response>
+{
+    public override void Configure()
+    {
+        Post("/api/{{FeatureKebab}}");
+        AllowAnonymous();
+        Description(b => b
+            .Produces<{{Action}}{{Feature}}Response>(201, "application/json")
+            .ProducesProblemFE(400)
+            .WithTags("{{Feature}}")
+            .WithSummary("Crea un nuevo {{Feature}} e invalida el caché"));
+    }
+
+    public override async Task HandleAsync({{Action}}{{Feature}}Request req, CancellationToken ct)
+    {
+        // 1. Mapeo o creación de entidad
+        // var entity = ...
+
+        // 2. Persistir
+        // dbContext.{{FeaturePlural}}.Add(entity);
+        // await dbContext.SaveChangesAsync(ct);
+
+        // 3. Invalidar caché
+        await cache.RemoveAsync("{{FeatureKebab}}:list:all", ct);
+
+        // 4. Respuesta
+        var response = new {{Action}}{{Feature}}Response(Guid.NewGuid(), req.Name, req.Code, DateTime.UtcNow);
+        await Send.CreatedAtAsync(null, response, cancellation: ct);
+    }
+}

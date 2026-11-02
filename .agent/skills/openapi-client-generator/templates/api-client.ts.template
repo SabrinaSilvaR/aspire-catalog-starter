@@ -1,0 +1,26 @@
+export async function apiRequest<TResponse>(
+  endpoint: string,
+  options?: RequestInit
+): Promise<TResponse> {
+  const url = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+  
+  const response = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options?.headers,
+    },
+    ...options,
+  })
+
+  if (!response.ok) {
+    const errorJson = await response.json().catch(() => null)
+    const message = errorJson?.detail || errorJson?.title || `Error HTTP ${response.status}`
+    throw new Error(message)
+  }
+
+  if (response.status === 204) {
+    return {} as TResponse
+  }
+
+  return response.json()
+}

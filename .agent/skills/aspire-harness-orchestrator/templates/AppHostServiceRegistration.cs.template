@@ -1,0 +1,4 @@
+// Registro de nuevo microservicio o servicio en Aspire AppHost
+var {{ServiceName}} = builder.AddProject<Projects.{{ServiceProject}}>("{{ServiceNameKebab}}")
+                             .WithReference(sql)
+                             .WithReference(redis);

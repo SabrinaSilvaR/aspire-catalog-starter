@@ -1,0 +1,51 @@
+using Backend.Application.Common.Interfaces;
+using FastEndpoints;
+using FluentValidation;
+using Microsoft.AspNetCore.Http;
+
+namespace Backend.Api.Endpoints.Suppliers;
+
+public record CreateSupplierRequest(string LegalName, string TaxId, string Email, string Phone);
+
+public record CreateSupplierResponse(Guid Id, string LegalName, string TaxId, string Email, string Phone, DateTime CreatedAtUtc);
+
+public class CreateSupplierValidator : Validator<CreateSupplierRequest>
+{
+    public CreateSupplierValidator()
+    {
+        RuleFor(x => x.LegalName).NotEmpty().MaximumLength(200);
+        RuleFor(x => x.TaxId).NotEmpty().Matches(@"^\d{7,8}-[\dkK]$").WithMessage("El RUT debe tener formato 12345678-K");
+        RuleFor(x => x.Email).NotEmpty().EmailAddress();
+    }
+}
+
+public class CreateSupplierEndpoint(IApplicationDbContext dbContext, ICacheService cache)
+    : Endpoint<CreateSupplierRequest, CreateSupplierResponse>
+{
+    public override void Configure()
+    {
+        Post("/api/suppliers");
+        AllowAnonymous();
+        Description(b => b
+            .Produces<CreateSupplierResponse>(201)
+            .ProducesProblemFE(400)
+            .WithTags("Suppliers"));
+    }
+
+    public override async Task HandleAsync(CreateSupplierRequest req, CancellationToken ct)
+    {
+        // Invalidar caché de listados de proveedores
+        await cache.RemoveAsync("suppliers:list:all", ct);
+
+        var response = new CreateSupplierResponse(
+            Guid.NewGuid(),
+            req.LegalName,
+            req.TaxId,
+            req.Email,
+            req.Phone,
+            DateTime.UtcNow
+        );
+
+        await Send.CreatedAtAsync(null, response, cancellation: ct);
+    }
+}

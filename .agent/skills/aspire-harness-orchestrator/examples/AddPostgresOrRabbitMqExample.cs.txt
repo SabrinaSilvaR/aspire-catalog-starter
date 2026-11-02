@@ -1,0 +1,11 @@
+// Ejemplo: Cómo agregar PostgreSQL o RabbitMQ al AppHost de Aspire
+
+// 1. Agregar paquete: Aspire.Hosting.PostgreSQL o Aspire.Hosting.RabbitMQ
+// 2. En Program.cs del AppHost:
+
+// Agregar RabbitMQ
+var messaging = builder.AddRabbitMQ("messaging")
+                       .WithManagementPlugin();
+
+// Vincular RabbitMQ al Backend
+backend.WithReference(messaging);
