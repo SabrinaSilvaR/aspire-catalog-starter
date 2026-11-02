@@ -1,0 +1,6 @@
+{
+  "dotnet.defaultSolution": "ProyectoFullstack.slnx",
+  "dotnet.preferCSharpExtension": true,
+  "omnisharp.useModernNet": true,
+  "csharp.experimental.enableNewProjectCreation": true
+}
