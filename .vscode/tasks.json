@@ -1,0 +1,40 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/harness/ProyectoFullstack.AppHost/ProyectoFullstack.AppHost.csproj"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "frontend:build",
+      "command": "npm",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "args": ["run", "build"],
+      "problemMatcher": []
+    },
+    {
+      "label": "aspire:run",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/harness/ProyectoFullstack.AppHost/ProyectoFullstack.AppHost.csproj"
+      ],
+      "problemMatcher": "$msCompile"
+    }
+  ]
+}

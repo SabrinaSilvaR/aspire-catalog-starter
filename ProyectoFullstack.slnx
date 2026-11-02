@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/harness/">
+    <Project Path="harness/ProyectoFullstack.AppHost/ProyectoFullstack.AppHost.csproj" />
+    <Project Path="src/Backend.Api/Backend.Api.csproj" />
+    <Project Path="src/Backend.Application/Backend.Application.csproj" />
+    <Project Path="src/Backend.Domain/Backend.Domain.csproj" />
+    <Project Path="src/Backend.Infrastructure/Backend.Infrastructure.csproj" />
+    <Project Path="src/Backend.ServiceDefaults/Backend.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/src/" />
+</Solution>
