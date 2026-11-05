@@ -6,7 +6,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/harness/ProyectoFullstack.AppHost/bin/Debug/net9.0/ProyectoFullstack.AppHost.dll",
+      "program": "${workspaceFolder}/harness/ProyectoFullstack.AppHost/bin/Debug/net10.0/ProyectoFullstack.AppHost.dll",
       "args": [],
       "cwd": "${workspaceFolder}/harness/ProyectoFullstack.AppHost",
       "stopAtEntry": false,

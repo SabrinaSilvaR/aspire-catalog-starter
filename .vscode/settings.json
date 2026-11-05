@@ -3,9 +3,14 @@
   "dotnet.preferCSharpExtension": true,
   "omnisharp.useModernNet": true,
   "csharp.experimental.enableNewProjectCreation": true,
-  "dotnet.dotnetPath": "C:\\Users\\sabri\\AppData\\Local\\Microsoft\\dotnet",
   "terminal.integrated.env.windows": {
     "PATH": "C:\\Users\\sabri\\AppData\\Local\\Microsoft\\dotnet;${env:PATH}",
     "DOTNET_ROOT": "C:\\Users\\sabri\\AppData\\Local\\Microsoft\\dotnet"
-  }
+  },
+  "dotnetAcquisitionExtension.existingDotnetPath": [
+    {
+      "extensionId": "ms-dotnettools.csharp",
+      "path": "C:\\Users\\sabri\\AppData\\Local\\Microsoft\\dotnet\\dotnet.exe"
+    }
+  ]
 }
