@@ -1,9 +1,8 @@
+using Backend.Api.ErrorHandling;
 using Backend.Infrastructure;
-using Backend.Infrastructure.Persistence;
 using Backend.ServiceDefaults;
 using FastEndpoints;
 using FastEndpoints.Swagger;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +20,10 @@ builder.Host.UseSerilog((context, lc) =>
 
 // Configuración de Capas
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// Manejo centralizado de errores (RFC 7807 ProblemDetails, sin filtrar ex.Message/stack traces)
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 // CORS para permitir peticiones del Frontend React en desarrollo
 builder.Services.AddCors(options =>
@@ -55,12 +58,10 @@ var app = builder.Build();
 // Endpoints de salud y telemetría de Aspire (/health, /alive)
 app.MapDefaultEndpoints();
 
-// Inicialización de la base de datos
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await db.Database.EnsureCreatedAsync();
-}
+app.UseExceptionHandler();
+
+// Inicialización de la base de datos (migraciones en SQL Server, EnsureCreated en SQLite)
+await app.Services.InitializeDatabaseAsync();
 
 app.UseCors("AllowFrontend");
 

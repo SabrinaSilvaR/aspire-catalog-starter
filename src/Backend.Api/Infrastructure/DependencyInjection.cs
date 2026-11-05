@@ -56,4 +56,24 @@ public static class DependencyInjection
 
         return services;
     }
+
+    /// <summary>
+    /// Prepara el esquema de base de datos al iniciar la aplicación.
+    /// SQL Server (el proveedor orquestado por Aspire) usa el historial de migraciones versionado;
+    /// SQLite (fallback local sin contenedor) usa EnsureCreated porque es un almacén descartable.
+    /// </summary>
+    public static async Task InitializeDatabaseAsync(this IServiceProvider services, CancellationToken ct = default)
+    {
+        using var scope = services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        if (db.Database.IsSqlServer())
+        {
+            await db.Database.MigrateAsync(ct);
+        }
+        else
+        {
+            await db.Database.EnsureCreatedAsync(ct);
+        }
+    }
 }
