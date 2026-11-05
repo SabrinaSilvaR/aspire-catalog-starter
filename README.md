@@ -15,7 +15,7 @@
   - Proxy inteligente hacia la API provista por Aspire.
   - Interfaz de catálogo en tiempo real con indicador de caché hit (*Redis*) vs lectura en base de datos (*SQL Server*).
 - **⚙️ Backend Empresarial (FastEndpoints + Clean Architecture + .NET 10)**:
-  - Arquitectura limpia en 4 capas (`Domain`, `Application`, `Infrastructure`, `Api`) + `ServiceDefaults`.
+  - Un solo proyecto (`Backend.Api`) organizado por carpetas (`Domain`, `Application`, `Infrastructure`, `Endpoints`) + `Backend.ServiceDefaults` aparte.
   - Endpoints bajo el patrón REPR (*Request-Endpoint-Response*).
   - Aceleración con Redis e invalidación atómica de caché.
   - Documentación interactiva Swagger OpenAPI en `/swagger` y `/openapi/v1.json`.
@@ -30,6 +30,8 @@
 ---
 
 ## 📁 Estructura del Repositorio
+
+> 📖 Para una explicación detallada de qué va en cada carpeta (y un ejemplo real de cada patrón), ver [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 ```
 proyecto-fullstack-harness/
@@ -47,17 +49,19 @@ proyecto-fullstack-harness/
 │       ├── Program.cs                 <- Código C# que orquesta SQL, Redis, Back y Front
 │       └── launchSettings.json        <- Puertos de Dashboard y OTLP (localhost:18888)
 ├── src/
-│   ├── Backend.ServiceDefaults/       <- Extensiones de resiliencia y OpenTelemetry
-│   ├── Backend.Domain/                <- Entidades puras y patrón Result<T>
-│   ├── Backend.Application/           <- Casos de uso, interfaces ICacheService, DTOs
-│   ├── Backend.Infrastructure/        <- EF Core (SQL Server / SQLite) y Redis Cache
-│   └── Backend.Api/                   <- FastEndpoints v8.3, Swagger, Program.cs
+│   ├── Backend.ServiceDefaults/        <- Extensiones de resiliencia y OpenTelemetry
+│   └── Backend.Api/                    <- Proyecto único (un solo .csproj), organizado por carpetas:
+│       ├── Domain/Entities/            <- Entidades puras y patrón Result<T>
+│       ├── Application/                <- Casos de uso, interfaces ICacheService, DTOs
+│       ├── Infrastructure/              <- EF Core (SQL Server / SQLite), migraciones y Redis Cache
+│       ├── Endpoints/                   <- Endpoints FastEndpoints v8.3 (REPR)
+│       ├── ErrorHandling/               <- ProblemDetails centralizado (RFC 7807)
+│       └── Program.cs
 ├── frontend/                          <- REACT 19 + VITE + TYPESCRIPT
 │   ├── package.json
 │   ├── vite.config.ts                 <- Proxy dinámico hacia el Backend
 │   └── src/
-│       ├── api/types.ts               <- Tipos de contratos de datos
-│       ├── App.tsx                    <- Dashboard y catálogo reactivo
+│       ├── app/                        <- Componentes, schemas Zod, IoC
 │       └── main.tsx
 ├── specs/                             <- Ciclo OpenSpec SDD
 │   ├── project.md                     <- Contexto general del sistema
@@ -95,13 +99,14 @@ proyecto-fullstack-harness/
 ### Opción 2: Ejecución desde la Terminal
 
 ```powershell
-# 1. Navegar a la raíz del monorepo
-cd proyecto-fullstack-harness
+# Atajo (valida que Docker esté corriendo antes de arrancar)
+.\scripts\dev.ps1        # PowerShell
+./scripts/dev.sh         # Git Bash / WSL
 
-# 2. Iniciar el Harness de Aspire (levanta SQL + Redis + Back + Front)
+# Equivalente manual, sin el chequeo de Docker
 dotnet run --project harness/ProyectoFullstack.AppHost
 
-# 3. Acceder al Dashboard:
+# Acceder al Dashboard:
 # http://localhost:18888
 ```
 
