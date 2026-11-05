@@ -1,0 +1,50 @@
+# Frontend Architecture Index (llms.txt)
+
+> Documentación estructurada de referencia para asistentes de inteligencia artificial (Copilot, Claude, Gemini, Antigravity) que operen en `frontend/`.
+
+## 1. Stack Tecnológico
+- **Framework**: React 19 SPA con TypeScript estricto.
+- **Build Tool**: Vite con plugin UnoCSS y proxy a Aspire.
+- **Inversión de Control**: `#libs/ioc` (`createContainer`, `InversionOfControlProvider`, `useInjection`).
+- **Feature Flags**: `#libs/feature` (`FeatureHandler`, `useFeature`, `FeatureProvider`).
+- **Validación de Esquemas**: Zod 4+ (`z.infer`, `.safeParse`).
+- **Gestión de Estado**: Átomos ligeros de Jotai (`src/app/store/`).
+- **Estilos**: UnoCSS (utilidades atómicas) + CSS Modules (`*.module.css`).
+- **Testing**: Vitest + React Testing Library + happy-dom.
+
+## 2. Jerarquía de Carpetas
+```
+frontend/src/
+  app/
+    components/
+      atoms/       # Botones, inputs, badges puros (sin lógica de negocio)
+      molecules/   # Formularios agrupados, campos combinados
+      organisms/   # Secciones de negocio complejas conectadas a IoC/store
+    layouts/       # Esqueletos estructurales (AppLayout, etc.)
+    pages/         # Vistas de ruta
+    schemas/       # Esquemas de validación Zod (*.schema.ts)
+    services/      # Clases de servicio para interacción con API (*.service.ts)
+    store/         # Átomos de Jotai (*.store.ts)
+    app.ioc.ts     # Bootstrap del contenedor de inyección de dependencias
+    App.tsx        # Orquestador raíz con providers
+  libs/
+    ioc/           # Contenedor IoC y hook useInjection
+    feature/       # Gestor y hook de Feature Flags
+```
+
+## 3. Comandos Esenciales
+- `npm run dev`: Servidor de desarrollo con HMR y proxy a Aspire.
+- `npm run build`: Compilación de tipos TypeScript + bundle de producción Vite.
+- `npm run test:run`: Ejecución única de la suite de pruebas Vitest.
+- `npm run lint`: Chequeo rápido con Oxlint.
+
+## 4. Reglas Críticas
+1. **Nunca usar `fetch` directo en componentes**: Encapsular en `src/app/services/` e inyectar vía `useInjection`.
+2. **Cero `any`**: Tipar props explícitamente y usar inferencia de Zod.
+3. **Manejar 3 estados**: Todo componente de red debe mostrar loading, empty y error.
+
+## 5. Depuración y Resolución de Errores (debug-expert)
+- Seguir el protocolo de 4 fases definido en `.agent/roles/debug-expert.md`.
+- Aislar el fallo con un test en Vitest (`*.spec.tsx`) antes de aplicar correcciones.
+- Usar `.agent/skills/systematic-debugging/SKILL.md` para checklist de fallos de IoC, Zod o Vite proxy.
+

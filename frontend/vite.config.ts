@@ -1,9 +1,20 @@
+import path from 'node:path'
 import react from '@vitejs/plugin-react'
+import UnoCSS from 'unocss/vite'
 import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    UnoCSS(),
+    react(),
+  ],
+  resolve: {
+    alias: {
+      '#libs': path.resolve(import.meta.dirname, './src/libs'),
+      '@': path.resolve(import.meta.dirname, './src'),
+    },
+  },
   server: {
     port: parseInt(process.env.PORT || '5173'),
     proxy: {

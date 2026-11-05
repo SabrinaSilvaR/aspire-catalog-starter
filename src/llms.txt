@@ -1,0 +1,36 @@
+# Backend Architecture Index (llms.txt)
+
+> Documentación estructurada de referencia para asistentes de inteligencia artificial (Copilot, Claude, Gemini, Antigravity) que operen en `src/`.
+
+## 1. Stack Tecnológico
+- **Framework**: .NET 9 con C# 13 y tipos de referencia anulables habilitados.
+- **Estilo de API**: FastEndpoints bajo el patrón REPR (Request-Endpoint-Response).
+- **Validación de Entradas**: FluentValidation (`Validator<TRequest>`).
+- **Persistencia**: Microsoft SQL Server 2022 con Entity Framework Core 9.
+- **Caché Distribuido**: Redis 7 vía `ICacheService` con soporte distribuido.
+- **Orquestación**: .NET Aspire 9.0 AppHost inyectando cadenas de conexión y telemetría OTLP.
+- **Pruebas**: xUnit, FluentAssertions, FastEndpoints.Testing.
+
+## 2. Jerarquía de Proyectos (`src/`)
+```
+src/
+  Backend.Domain/             # Entidades POCO, Result Pattern, Excepciones de Dominio
+  Backend.Application/        # Interfaces, DTOs, Validadores, Lógica de Aplicación
+  Backend.Infrastructure/     # DbContext, Mapeos EF Core, Redis Caching, Repositorios
+  Backend.Api/                # Endpoints FastEndpoints, Swagger, Configuración Program.cs
+  Backend.ServiceDefaults/   # Extensiones Aspire (Salud, Resiliencia, OpenTelemetry)
+tests/
+  Backend.Api.Tests/         # Pruebas unitarias de Endpoints y Validadores (xUnit)
+```
+
+## 3. Comandos Esenciales
+- `dotnet build`: Compila la solución completa con 0 errores y 0 advertencias.
+- `dotnet test`: Ejecuta toda la suite de pruebas automatizadas.
+- `dotnet watch run --project src/Backend.Api`: Servidor de desarrollo con Hot Reload.
+
+## 4. Reglas Críticas
+1. **Un endpoint = Una clase**: Prohibido usar controladores MVC con múltiples métodos.
+2. **Endpoints Delgados**: La lógica de negocio reside en servicios o agregados; `HandleAsync` orquesta y da formato.
+3. **Propagación de `CancellationToken`**: Pasar siempre `ct` a todas las llamadas asíncronas de EF Core y Redis.
+4. **Cero Secretos Hardcodeados**: Las conexiones son provistas exclusivamente por Aspire en tiempo de ejecución.
+5. **No filtrar excepciones internas**: Usar ProblemDetails (RFC 7807) para errores al cliente.

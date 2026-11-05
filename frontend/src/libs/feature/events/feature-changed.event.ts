@@ -1,0 +1,13 @@
+export const FEATURE_CHANGED_EVENT = 'feature_changed';
+
+/**
+ * Triggered when a feature changes from FeatureHandler.
+ */
+export class FeatureChangedEvent extends Event {
+	readonly changedFeatures: Record<string, boolean>;
+
+	constructor(changedFeatures: Record<string, boolean>) {
+		super(FEATURE_CHANGED_EVENT);
+		this.changedFeatures = changedFeatures;
+	}
+}
